@@ -13,17 +13,28 @@
       margin: 0;
       padding: 20px;
     }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      height: 60px;
+    }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       background: white;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-top: 5px solid #003366; /* Azul Claro */
     }
     h1 {
       text-align: center;
       color: #003366;
+      margin-top: 0;
     }
     .form-group {
       margin-bottom: 18px;
@@ -39,6 +50,21 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+    }
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    .checkbox-grid label {
+      font-weight: normal;
+      cursor: pointer;
     }
     button {
       background: #003366;
@@ -65,6 +91,11 @@
 </head>
 <body>
   <div class="container">
+    <div class="header">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Claro_Brasil_logo.svg" alt="Claro">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_Grupo_Boticario.svg" alt="Grupo Boticário">
+    </div>
+
     <h1>📝 Abertura de Sinistro</h1>
     <div id="status" class="alert"></div>
 
@@ -106,7 +137,7 @@
 
       <div class="form-group">
         <label>E-mail do Responsável *</label>
-        <input type="email" id="email_responsavel" required placeholder="Apenas @globalhitss, @claro, @embratel, @primesys, @grupoboticario">
+        <input type="email" id="email_responsavel" required placeholder="E-mail de contato da franquia">
       </div>
 
       <div class="form-group">
@@ -116,48 +147,14 @@
 
       <div class="form-group">
         <label>Equipamentos Selecionados *</label>
-        <select id="equipamentos_selecionados" multiple required>
-          <option value="SINISTRO TOTAL">SINISTRO TOTAL</option>
-          <option value="RACK">RACK</option>
-          <option value="NO-BREAK">NO-BREAK</option>
-          <option value="ESTABILIZADOR">ESTABILIZADOR</option>
-          <option value="MX">MX</option>
-          <option value="MR">MR</option>
-          <option value="MS">MS</option>
-          <option value="MV">MV</option>
-          <option value="CABO DE ALIMENTAÇÃO">CABO DE ALIMENTAÇÃO</option>
-          <option value="FONTE POE">FONTE POE</option>
-          <option value="MODEM 4G">MODEM 4G</option>
-          <option value="MODEM CISCO">MODEM CISCO</option>
-        </select>
+        <div class="checkbox-grid" id="equipamentos-grid"></div>
+        <input type="hidden" id="equipamentos_selecionados" required>
       </div>
 
       <div class="form-group">
         <label>Modelos dos Equipamentos *</label>
-        <select id="modelos_equipamentos" multiple required>
-          <option value="SMS STATION 2 1200">SMS STATION 2 1200</option>
-          <option value="APC 1200">APC 1200</option>
-          <option value="SMS PROGRESSIVE II">SMS PROGRESSIVE II</option>
-          <option value="MX64">MX64</option>
-          <option value="MX65">MX65</option>
-          <option value="MX68">MX68</option>
-          <option value="MR33">MR33</option>
-          <option value="MR36">MR36</option>
-          <option value="MS - 8 PORTAS S/ POE">MS - 8 PORTAS S/ POE</option>
-          <option value="MS - 8 PORTAS C/ POE">MS - 8 PORTAS C/ POE</option>
-          <option value="MS 24 PORTAS S/ POE">MS 24 PORTAS S/ POE</option>
-          <option value="MS 24 PORTAS C/ POE">MS 24 PORTAS C/ POE</option>
-          <option value="MV02">MV02</option>
-          <option value="MV12w">MV12w</option>
-          <option value="CABO DE ALIMENTAÇÃO">CABO DE ALIMENTAÇÃO</option>
-          <option value="PoE">PoE</option>
-          <option value="ZTE - MF253">ZTE - MF253</option>
-          <option value="ZTE - MF293">ZTE - MF293</option>
-          <option value="ELSYS - EPRL12">ELSYS - EPRL12</option>
-          <option value="ELSYS - EPRL18">ELSYS - EPRL18</option>
-          <option value="CISCO 1905">CISCO 1905</option>
-          <option value="NÃO INFORMADO">NÃO INFORMADO</option>
-        </select>
+        <div class="checkbox-grid" id="modelos-grid"></div>
+        <input type="hidden" id="modelos_equipamentos" required>
       </div>
 
       <div class="form-group">
@@ -181,6 +178,38 @@
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzemdqaHh5ZWJoZ3V5eGd1dmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2Mjg4NDYsImV4cCI6MjA3MTIwNDg0Nn0.ac8jt3XRlhpNnwt4eJKwMN85K9IrG2i8y3EzRaEf1c8';
     const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
+    // Listas de opções
+    const equipamentos = [
+      "SINISTRO TOTAL", "RACK", "NO-BREAK", "ESTABILIZADOR", "MX", "MR", "MS", "MV",
+      "CABO DE ALIMENTAÇÃO", "FONTE POE", "MODEM 4G", "MODEM CISCO"
+    ];
+
+    const modelos = [
+      "SMS STATION 2 1200", "APC 1200", "SMS PROGRESSIVE II", "MX64", "MX65", "MX68",
+      "MR33", "MR36", "MS - 8 PORTAS S/ POE", "MS - 8 PORTAS C/ POE", "MS 24 PORTAS S/ POE",
+      "MS 24 PORTAS C/ POE", "MV02", "MV12w", "CABO DE ALIMENTAÇÃO", "PoE",
+      "ZTE - MF253", "ZTE - MF293", "ELSYS - EPRL12", "ELSYS - EPRL18", "CISCO 1905", "NÃO INFORMADO"
+    ];
+
+    // Gerar checkboxes
+    function gerarCheckboxes(lista, containerId, hiddenId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      lista.forEach(item => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = item;
+        input.onchange = () => {
+          const selecionados = Array.from(container.querySelectorAll('input:checked')).map(el => el.value);
+          document.getElementById(hiddenId).value = selecionados.join(', ');
+        };
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(` ${item}`));
+        container.appendChild(label);
+      });
+    }
+
     // Gerar CH ao carregar
     document.addEventListener('DOMContentLoaded', async () => {
       const { data, error } = await supabase
@@ -191,6 +220,10 @@
       const sequencia = (data?.length || 0) + 1;
       const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
       document.getElementById('ch_sinistro').value = ch;
+
+      // Gerar checkboxes
+      gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
+      gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
     });
 
     async function limparForm() {
@@ -208,14 +241,6 @@
       e.preventDefault();
       const form = e.target;
 
-      // Validação de e-mail
-      const email = document.getElementById('email_responsavel').value;
-      const dominios = ['@globalhitss.com.br', '@claro.com.br', '@embratel.com.br', '@primesys.com.br', '@grupoboticario.com.br'];
-      if (!dominios.some(d => email.endsWith(d))) {
-        mostrarStatus('E-mail inválido. Use um dos domínios permitidos.', 'error');
-        return;
-      }
-
       // Coletar dados
       const formData = {
         ch_sinistro: document.getElementById('ch_sinistro').value,
@@ -224,10 +249,10 @@
         franquia: document.getElementById('franquia').value,
         responsavel_franquia: document.getElementById('responsavel_franquia').value,
         telefone_responsavel: document.getElementById('telefone_responsavel').value,
-        email_responsavel: email,
+        email_responsavel: document.getElementById('email_responsavel').value,
         data_sinistro: document.getElementById('data_sinistro').value,
-        equipamentos_selecionados: Array.from(document.getElementById('equipamentos_selecionados').selectedOptions).map(o => o.value).join(', '),
-        modelos_equipamentos: Array.from(document.getElementById('modelos_equipamentos').selectedOptions).map(o => o.value).join(', '),
+        equipamentos_selecionados: document.getElementById('equipamentos_selecionados').value,
+        modelos_equipamentos: document.getElementById('modelos_equipamentos').value,
         descricao: document.getElementById('descricao').value,
         status: 'Sinistro Registrado'
       };
@@ -258,16 +283,21 @@
       if (error) {
         mostrarStatus('Erro: ' + error.message, 'error');
       } else {
-        mostrarStatus(`✅ Sinistro ${formData.ch_sinistro} registrado com sucesso!`, 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        // Mostrar tela de sucesso
+        document.getElementById('sinistroForm').style.display = 'none';
+        mostrarStatus(`
+          <h2>✅ Sinistro ${formData.ch_sinistro} registrado com sucesso!</h2>
+          <p>Olá, seu sinistro foi registrado com sucesso. Vamos analisar o quanto antes.</p>
+          <p><strong>Número do CH:</strong> ${formData.ch_sinistro}</p>
+          <p>Um e-mail de confirmação foi enviado para <strong>${formData.email_responsavel}</strong>.</p>
+          <button onclick="window.location.reload()" style="background:#003366; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">➕ Registrar novo sinistro</button>
+        `, 'success');
       }
     });
 
     function mostrarStatus(mensagem, tipo) {
       const status = document.getElementById('status');
-      status.textContent = mensagem;
+      status.innerHTML = mensagem;
       status.className = `alert ${tipo}`;
       status.style.display = 'block';
     }
