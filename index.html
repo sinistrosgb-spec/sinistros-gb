@@ -11,10 +11,10 @@
   <link rel="shortcut icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
 
   <style>
-    /* Fundo prateado (cinza claro) */
+    /* Fundo prateado */
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f0f0; /* Prateado suave */
+      background: #f0f0f0;
       color: #333;
       margin: 0;
       padding: 20px;
@@ -42,16 +42,15 @@
       height: 60px;
     }
 
-    /* Título com ícone antes */
+    /* Título com ícone */
     .title-container {
       display: flex;
       align-items: center;
       gap: 10px;
       justify-content: center;
-      margin-bottom: 20px;
     }
     .title-container img {
-      height: 32px; /* Tamanho do ícone ao lado do título */
+      height: 32px;
     }
     h1 {
       color: #003366;
@@ -132,7 +131,7 @@
         <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" alt="Ícone Meraki">
         <h1>📝 Abertura de Sinistro</h1>
       </div>
-      <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-boticario.png?raw=true" alt="Grupo Boticário" style="height:40px;"> <!-- Logo menor -->
+      <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-boticario.png?raw=true" alt="Grupo Boticário" style="height:40px;">
     </div>
 
     <div id="status" class="alert"></div>
@@ -143,8 +142,9 @@
         <input type="text" id="ch_sinistro" readonly placeholder="Será gerado ao carregar">
       </div>
 
+      <!-- Campo: Referência -->
       <div class="form-group">
-        <label>Registro *</label>
+        <label>Referência *</label>
         <select id="registro" required>
           <option value="">Selecione...</option>
           <option value="TT Siebel">TT Siebel</option>
@@ -153,8 +153,9 @@
         </select>
       </div>
 
+      <!-- Campo: Número da Referência -->
       <div class="form-group">
-        <label>Número do Registro *</label>
+        <label>Número da Referência *</label>
         <input type="text" id="numero_ocorrencia" required>
       </div>
 
