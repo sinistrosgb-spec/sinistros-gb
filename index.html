@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abertura de Sinistro - Sinistros GB</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      background: #003366;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #002244;
+    }
+    .alert {
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 6px;
+      display: none;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Abertura de Sinistro</h1>
+    <div id="status" class="alert"></div>
+
+    <form id="sinistroForm">
+      <div class="form-group">
+        <label>CH-Sinistro (gerado automaticamente)</label>
+        <input type="text" id="ch_sinistro" readonly placeholder="Será gerado ao carregar">
+      </div>
+
+      <div class="form-group">
+        <label>Registro *</label>
+        <select id="registro" required>
+          <option value="">Selecione...</option>
+          <option value="TT Siebel">TT Siebel</option>
+          <option value="OS BOTI">OS BOTI</option>
+          <option value="INC">INC</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Número da Ocorrência *</label>
+        <input type="text" id="numero_ocorrencia" required>
+      </div>
+
+      <div class="form-group">
+        <label>Franquia *</label>
+        <input type="text" id="franquia" required>
+      </div>
+
+      <div class="form-group">
+        <label>Responsável pela Franquia *</label>
+        <input type="text" id="responsavel_franquia" required>
+      </div>
+
+      <div class="form-group">
+        <label>Telefone do Responsável</label>
+        <input type="text" id="telefone_responsavel">
+      </div>
+
+      <div class="form-group">
+        <label>E-mail do Responsável *</label>
+        <input type="email" id="email_responsavel" required placeholder="Apenas @globalhitss, @claro, @embratel, @primesys, @grupoboticario">
+      </div>
+
+      <div class="form-group">
+        <label>Data do Sinistro *</label>
+        <input type="datetime-local" id="data_sinistro" required>
+      </div>
+
+      <div class="form-group">
+        <label>Equipamentos Selecionados *</label>
+        <select id="equipamentos_selecionados" multiple required>
+          <option value="SINISTRO TOTAL">SINISTRO TOTAL</option>
+          <option value="RACK">RACK</option>
+          <option value="NO-BREAK">NO-BREAK</option>
+          <option value="ESTABILIZADOR">ESTABILIZADOR</option>
+          <option value="MX">MX</option>
+          <option value="MR">MR</option>
+          <option value="MS">MS</option>
+          <option value="MV">MV</option>
+          <option value="CABO DE ALIMENTAÇÃO">CABO DE ALIMENTAÇÃO</option>
+          <option value="FONTE POE">FONTE POE</option>
+          <option value="MODEM 4G">MODEM 4G</option>
+          <option value="MODEM CISCO">MODEM CISCO</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Modelos dos Equipamentos *</label>
+        <select id="modelos_equipamentos" multiple required>
+          <option value="SMS STATION 2 1200">SMS STATION 2 1200</option>
+          <option value="APC 1200">APC 1200</option>
+          <option value="SMS PROGRESSIVE II">SMS PROGRESSIVE II</option>
+          <option value="MX64">MX64</option>
+          <option value="MX65">MX65</option>
+          <option value="MX68">MX68</option>
+          <option value="MR33">MR33</option>
+          <option value="MR36">MR36</option>
+          <option value="MS - 8 PORTAS S/ POE">MS - 8 PORTAS S/ POE</option>
+          <option value="MS - 8 PORTAS C/ POE">MS - 8 PORTAS C/ POE</option>
+          <option value="MS 24 PORTAS S/ POE">MS 24 PORTAS S/ POE</option>
+          <option value="MS 24 PORTAS C/ POE">MS 24 PORTAS C/ POE</option>
+          <option value="MV02">MV02</option>
+          <option value="MV12w">MV12w</option>
+          <option value="CABO DE ALIMENTAÇÃO">CABO DE ALIMENTAÇÃO</option>
+          <option value="PoE">PoE</option>
+          <option value="ZTE - MF253">ZTE - MF253</option>
+          <option value="ZTE - MF293">ZTE - MF293</option>
+          <option value="ELSYS - EPRL12">ELSYS - EPRL12</option>
+          <option value="ELSYS - EPRL18">ELSYS - EPRL18</option>
+          <option value="CISCO 1905">CISCO 1905</option>
+          <option value="NÃO INFORMADO">NÃO INFORMADO</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Descrição do Sinistro *</label>
+        <textarea id="descricao" rows="4" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Anexos (fotos, vídeos, PDFs)</label>
+        <input type="file" id="anexos" multiple accept="image/*,video/*,application/pdf">
+      </div>
+
+      <button type="submit">📤 Registrar Sinistro</button>
+      <button type="button" onclick="limparForm()">🔄 Limpar</button>
+    </form>
+  </div>
+
+  <script>
+    // 🔥 Substitua com suas credenciais do Supabase
+    const supabaseUrl = 'https://zszgjhxyebhguyxguvek.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzemdqaHh5ZWJoZ3V5eGd1dmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2Mjg4NDYsImV4cCI6MjA3MTIwNDg0Nn0.ac8jt3XRlhpNnwt4eJKwMN85K9IrG2i8y3EzRaEf1c8';
+    const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    // Gerar CH ao carregar
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { data, error } = await supabase
+        .from('sinistros')
+        .select('ch_sinistro', { count: 'exact' })
+        .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
+      
+      const sequencia = (data?.length || 0) + 1;
+      const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
+      document.getElementById('ch_sinistro').value = ch;
+    });
+
+    async function limparForm() {
+      document.getElementById('sinistroForm').reset();
+      const { data, error } = await supabase
+        .from('sinistros')
+        .select('ch_sinistro', { count: 'exact' })
+        .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
+      const sequencia = (data?.length || 0) + 1;
+      const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
+      document.getElementById('ch_sinistro').value = ch;
+    }
+
+    document.getElementById('sinistroForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+
+      // Validação de e-mail
+      const email = document.getElementById('email_responsavel').value;
+      const dominios = ['@globalhitss.com.br', '@claro.com.br', '@embratel.com.br', '@primesys.com.br', '@grupoboticario.com.br'];
+      if (!dominios.some(d => email.endsWith(d))) {
+        mostrarStatus('E-mail inválido. Use um dos domínios permitidos.', 'error');
+        return;
+      }
+
+      // Coletar dados
+      const formData = {
+        ch_sinistro: document.getElementById('ch_sinistro').value,
+        registro: document.getElementById('registro').value,
+        numero_ocorrencia: document.getElementById('numero_ocorrencia').value,
+        franquia: document.getElementById('franquia').value,
+        responsavel_franquia: document.getElementById('responsavel_franquia').value,
+        telefone_responsavel: document.getElementById('telefone_responsavel').value,
+        email_responsavel: email,
+        data_sinistro: document.getElementById('data_sinistro').value,
+        equipamentos_selecionados: Array.from(document.getElementById('equipamentos_selecionados').selectedOptions).map(o => o.value).join(', '),
+        modelos_equipamentos: Array.from(document.getElementById('modelos_equipamentos').selectedOptions).map(o => o.value).join(', '),
+        descricao: document.getElementById('descricao').value,
+        status: 'Sinistro Registrado'
+      };
+
+      // Upload de arquivos
+      const files = document.getElementById('anexos').files;
+      if (files.length > 0) {
+        const file = files[0];
+        const filePath = `public/${formData.ch_sinistro}/${file.name}`;
+        const { error: uploadError } = await supabase
+          .storage
+          .from('anexos-sinistros')
+          .upload(filePath, file, { upsert: true });
+
+        if (uploadError) {
+          mostrarStatus('Erro ao enviar anexo: ' + uploadError.message, 'error');
+        } else {
+          const { data } = supabase
+            .storage
+            .from('anexos-sinistros')
+            .getPublicUrl(filePath);
+          formData.anexos = data.publicUrl;
+        }
+      }
+
+      // Inserir no banco
+      const { error } = await supabase.from('sinistros').insert([formData]);
+      if (error) {
+        mostrarStatus('Erro: ' + error.message, 'error');
+      } else {
+        mostrarStatus(`✅ Sinistro ${formData.ch_sinistro} registrado com sucesso!`, 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    });
+
+    function mostrarStatus(mensagem, tipo) {
+      const status = document.getElementById('status');
+      status.textContent = mensagem;
+      status.className = `alert ${tipo}`;
+      status.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
