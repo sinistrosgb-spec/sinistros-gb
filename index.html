@@ -2,15 +2,15 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-    <title>Abertura de Sinistro - Sinistros GB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abertura de Sinistro - Sinistros GB</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Favicon personalizado: Meraki.ico -->
+  <!-- Favicon personalizado -->
   <link rel="icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
   <link rel="shortcut icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
 
   <style>
-    /* Fundo prateado */
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f0f0f0;
@@ -18,8 +18,6 @@
       margin: 0;
       padding: 20px;
     }
-
-    /* Container principal */
     .container {
       max-width: 900px;
       margin: 40px auto;
@@ -27,10 +25,8 @@
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      border-top: 5px solid #003366; /* Azul Claro */
+      border-top: 5px solid #003366;
     }
-
-    /* Cabeçalho com logos */
     .header {
       display: flex;
       justify-content: space-between;
@@ -40,8 +36,6 @@
     .header img {
       height: 60px;
     }
-
-    /* Título com ícone */
     .title-container {
       display: flex;
       align-items: center;
@@ -55,7 +49,6 @@
       color: #003366;
       margin: 0;
     }
-
     .form-group {
       margin-bottom: 18px;
     }
@@ -87,6 +80,9 @@
     .checkbox-grid label {
       font-weight: normal;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     button {
       background: #003366;
@@ -109,8 +105,6 @@
     }
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
-
-    /* Crédito no rodapé */
     .footer-credit {
       text-align: center;
       margin-top: 30px;
@@ -141,7 +135,6 @@
         <input type="text" id="ch_sinistro" readonly placeholder="Será gerado ao carregar">
       </div>
 
-      <!-- Campo: Referência -->
       <div class="form-group">
         <label>Referência *</label>
         <select id="registro" required>
@@ -152,7 +145,6 @@
         </select>
       </div>
 
-      <!-- Campo: Número da Referência -->
       <div class="form-group">
         <label>Número da Referência *</label>
         <input type="text" id="numero_ocorrencia" required>
@@ -234,12 +226,20 @@
       "ZTE - MF253", "ZTE - MF293", "ELSYS - EPRL12", "ELSYS - EPRL18", "CISCO 1905", "NÃO INFORMADO"
     ];
 
-    // Gerar checkboxes
+    // Função para gerar checkboxes
     function gerarCheckboxes(lista, containerId, hiddenId) {
       const container = document.getElementById(containerId);
+      if (!container) {
+        console.error(`Container ${containerId} não encontrado`);
+        return;
+      }
       container.innerHTML = '';
       lista.forEach(item => {
         const label = document.createElement('label');
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.gap = '8px';
+        label.style.margin = '4px 0';
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.value = item;
@@ -248,13 +248,14 @@
           document.getElementById(hiddenId).value = selecionados.join(', ');
         };
         label.appendChild(input);
-        label.appendChild(document.createTextNode(` ${item}`));
+        label.appendChild(document.createTextNode(item));
         container.appendChild(label);
       });
     }
 
-    // Gerar CH ao carregar
+    // Quando a página carregar
     document.addEventListener('DOMContentLoaded', async () => {
+      // Gerar CH-Sinistro
       const { data, error } = await supabase
         .from('sinistros')
         .select('ch_sinistro', { count: 'exact' })
@@ -269,20 +270,25 @@
       gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
     });
 
+    // Limpar formulário
     async function limparForm() {
       document.getElementById('sinistroForm').reset();
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('sinistros')
         .select('ch_sinistro', { count: 'exact' })
         .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
       const sequencia = (data?.length || 0) + 1;
       const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
       document.getElementById('ch_sinistro').value = ch;
+
+      // Recriar checkboxes
+      gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
+      gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
     }
 
+    // Enviar formulário
     document.getElementById('sinistroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = e.target;
 
       // Coletar dados
       const formData = {
@@ -321,12 +327,12 @@
         }
       }
 
-      // Inserir no banco
+      // Enviar para o banco
       const { error } = await supabase.from('sinistros').insert([formData]);
       if (error) {
         mostrarStatus('Erro: ' + error.message, 'error');
       } else {
-        // Mostrar tela de sucesso
+        // Tela de sucesso
         document.getElementById('sinistroForm').style.display = 'none';
         mostrarStatus(`
           <h2>✅ Sinistro ${formData.ch_sinistro} registrado com sucesso!</h2>
