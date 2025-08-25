@@ -294,7 +294,7 @@
       }
     });
 
-    // Funções de login
+    // Função de login
     async function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
@@ -308,6 +308,7 @@
       }
     }
 
+    // Função "Esqueci a senha"
     async function esqueciSenha() {
       const email = prompt('Digite seu e-mail para redefinir a senha:');
       if (!email) return;
@@ -323,16 +324,19 @@
       }
     }
 
+    // Função de logout
     function logout() {
       supabase.auth.signOut();
       showLogin();
     }
 
+    // Mostrar tela de login
     function showLogin() {
       document.getElementById('loginScreen').style.display = 'block';
       document.getElementById('mainForm').style.display = 'none';
     }
 
+    // Mostrar formulário
     function showForm() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainForm').style.display = 'block';
@@ -340,6 +344,7 @@
       gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
     }
 
+    // Gerar checkboxes
     function gerarCheckboxes(lista, containerId, hiddenId) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
@@ -424,6 +429,7 @@
       }
     });
 
+    // Mostrar status
     function mostrarStatus(mensagem, tipo) {
       const status = document.getElementById('status');
       status.innerHTML = mensagem;
