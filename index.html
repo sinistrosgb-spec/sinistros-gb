@@ -4,130 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Abertura de Sinistro - Sinistros GB</title>
-  <!-- Carrega Supabase JS antes de qualquer script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <!-- Favicon -->
   <link rel="icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
 
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f0f0;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      border-top: 5px solid #003366;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .header img {
-      height: 60px;
-    }
-    .title-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-    }
-    .title-container img {
-      height: 32px;
-    }
-    h1 {
-      color: #003366;
-      margin: 0;
-    }
-    .form-group {
-      margin-bottom: 18px;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #003366;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 6px;
-      background: #f9f9f9;
-    }
-    .checkbox-grid label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-    button {
-      background: #003366;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-right: 10px;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f0f0; color: #333; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border-top: 5px solid #003366; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header img { height: 60px; }
+    .title-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
+    .title-container img { height: 32px; }
+    h1 { color: #003366; margin: 0; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; color: #003366; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 6px; background: #f9f9f9; }
+    .checkbox-grid label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    button { background: #003366; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-right: 10px; }
     button:hover { background: #002244; }
-    .alert {
-      padding: 12px;
-      margin: 15px 0;
-      border-radius: 6px;
-      display: none;
-    }
+    .alert { padding: 12px; margin: 15px 0; border-radius: 6px; display: none; }
     .success { background: #d4edda; color: #155724; }
     .error { background: #f8d7da; color: #721c24; }
-    .footer-credit {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 12px;
-      color: #aaa;
-      border-top: 1px solid #ddd;
-      padding-top: 10px;
-    }
-    /* Tela de login */
-    .login-screen {
-      text-align: center;
-      padding: 40px;
-    }
-    .login-form {
-      max-width: 400px;
-      margin: 0 auto;
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .login-form input {
-      margin-bottom: 10px;
-    }
+    .footer-credit { text-align: center; margin-top: 30px; font-size: 12px; color: #aaa; border-top: 1px solid #ddd; padding-top: 10px; }
+    .login-screen { text-align: center; padding: 40px; }
+    .login-form { max-width: 400px; margin: 0 auto; background: #f9f9f9; padding: 20px; border-radius: 8px; }
+    .login-form input { margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <!-- Tela de login -->
   <div id="loginScreen" class="login-screen">
     <div class="header">
       <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-claro.png?raw=true" alt="Claro" style="height:60px;">
@@ -143,7 +49,6 @@
     <p style="font-size:12px; color:#888; margin-top:20px;">Apenas usuários autorizados</p>
   </div>
 
-  <!-- Formulário (escondido até login) -->
   <div id="mainForm" style="display:none;">
     <div class="container">
       <div class="header">
@@ -236,44 +141,34 @@
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzemdqaHh5ZWJoZ3V5eGd1dmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2Mjg4NDYsImV4cCI6MjA3MTIwNDg0Nn0.ac8jt3XRlhpNnwt4eJKwMN85K9IrG2i8y3EzRaEf1c8';
     const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-    // Função "Esqueci a senha" — FORÇADA para garantir que funcione
+    // Função de recuperação de senha
     async function esqueciSenha() {
-      // Garante que o DOM está carregado
-      await new Promise(resolve => {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', resolve);
-        } else {
-          resolve();
-        }
-      });
-
       const email = prompt('Digite seu e-mail para redefinir a senha:');
-      if (!email) {
-        alert('E-mail não informado.');
-        return;
-      }
-
-      console.log('Enviando link de recuperação para:', email);
+      if (!email) return;
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://sinistrosgb-spec.github.io/sinistros-gb/'
       });
 
       if (error) {
-        console.error('Erro no Supabase:', error);
         alert('Erro: ' + error.message);
       } else {
         alert('✅ Enviamos um link de redefinição para ' + email + '.\nVerifique seu e-mail.');
       }
     }
 
-    // Verifica se o loginScreen existe antes de usar
-    document.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        showForm();
-      } else {
+    // Verifica sessão ao carregar
+    window.addEventListener('load', async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) console.error('Erro ao verificar sessão:', error);
+        if (session) {
+          showForm();
+        } else {
+          showLogin();
+        }
+      } catch (err) {
+        console.error('Erro no loginScreen:', err);
         showLogin();
       }
     });
@@ -298,129 +193,14 @@
     }
 
     function showLogin() {
-      const loginScreen = document.getElementById('loginScreen');
-      const mainForm = document.getElementById('mainForm');
-      if (loginScreen) loginScreen.style.display = 'block';
-      if (mainForm) mainForm.style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'block';
+      document.getElementById('mainForm').style.display = 'none';
     }
 
     function showForm() {
-      const loginScreen = document.getElementById('loginScreen');
-      const mainForm = document.getElementById('mainForm');
-      if (loginScreen) loginScreen.style.display = 'none';
-      if (mainForm) mainForm.style.display = 'block';
-
-      // Gera checkboxes
-      gerarCheckboxes([
-        "SINISTRO TOTAL", "RACK", "NO-BREAK", "ESTABILIZADOR", "MX", "MR", "MS", "MV",
-        "CABO DE ALIMENTAÇÃO", "FONTE POE", "MODEM 4G", "MODEM CISCO"
-      ], 'equipamentos-grid', 'equipamentos_selecionados');
-
-      gerarCheckboxes([
-        "SMS STATION 2 1200", "APC 1200", "SMS PROGRESSIVE II", "MX64", "MX65", "MX68",
-        "MR33", "MR36", "MS - 8 PORTAS S/ POE", "MS - 8 PORTAS C/ POE", "MS 24 PORTAS S/ POE",
-        "MS 24 PORTAS C/ POE", "MV02", "MV12w", "CABO DE ALIMENTAÇÃO", "PoE",
-        "ZTE - MF253", "ZTE - MF293", "ELSYS - EPRL12", "ELSYS - EPRL18", "CISCO 1905", "NÃO INFORMADO"
-      ], 'modelos-grid', 'modelos_equipamentos');
-    }
-
-    function gerarCheckboxes(lista, containerId, hiddenId) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      container.innerHTML = '';
-      lista.forEach(item => {
-        const label = document.createElement('label');
-        label.style.display = 'flex';
-        label.style.align-items = 'center';
-        label.style.gap = '8px';
-        label.style.margin = '4px 0';
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.value = item;
-        input.onchange = () => {
-          const selecionados = Array.from(container.querySelectorAll('input:checked')).map(el => el.value);
-          document.getElementById(hiddenId).value = selecionados.join(', ');
-        };
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(item));
-        container.appendChild(label);
-      });
-    }
-
-    // Envio do formulário
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('sinistroForm');
-      if (form) {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          // Gera CH
-          const { data, error: countError } = await supabase
-            .from('sinistros')
-            .select('ch_sinistro', { count: 'exact' })
-            .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
-          
-          const sequencia = (data?.length || 0) + 1;
-          const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
-
-          // Coleta dados
-          const formData = {
-            ch_sinistro: ch,
-            registro: document.getElementById('registro').value,
-            numero_ocorrencia: document.getElementById('numero_ocorrencia').value,
-            franquia: document.getElementById('franquia').value,
-            responsavel_franquia: document.getElementById('responsavel_franquia').value,
-            telefone_responsavel: document.getElementById('telefone_responsavel').value,
-            email_responsavel: document.getElementById('email_responsavel').value,
-            data_sinistro: document.getElementById('data_sinistro').value,
-            equipamentos_selecionados: document.getElementById('equipamentos_selecionados').value,
-            modelos_equipamentos: document.getElementById('modelos_equipamentos').value,
-            descricao: document.getElementById('descricao').value,
-            status: 'Sinistro Registrado'
-          };
-
-          // Upload de arquivos
-          const files = document.getElementById('anexos').files;
-          if (files.length > 0) {
-            const file = files[0];
-            const filePath = `public/${ch}/${file.name}`;
-            const { error: uploadError } = await supabase
-              .storage
-              .from('anexos-sinistros')
-              .upload(filePath, file, { upsert: true });
-
-            if (uploadError) {
-              mostrarStatus('Erro ao enviar anexo: ' + uploadError.message, 'error');
-            } else {
-              const { data } = supabase.storage.from('anexos-sinistros').getPublicUrl(filePath);
-              formData.anexos = data.publicUrl;
-            }
-          }
-
-          // Salva no banco
-          const { error } = await supabase.from('sinistros').insert([formData]);
-          if (error) {
-            mostrarStatus('Erro: ' + error.message, 'error');
-          } else {
-            document.getElementById('sinistroForm').style.display = 'none';
-            mostrarStatus(`
-              <h2>✅ Sinistro ${ch} registrado com sucesso!</h2>
-              <p>O número do seu sinistro é: <strong>${ch}</strong></p>
-              <p>Vamos analisar o quanto antes.</p>
-              <button onclick="window.location.reload()">➕ Novo Sinistro</button>
-            `, 'success');
-          }
-        });
-      }
-    });
-
-    function mostrarStatus(mensagem, tipo) {
-      const status = document.getElementById('status');
-      if (status) {
-        status.innerHTML = mensagem;
-        status.className = `alert ${tipo}`;
-        status.style.display = 'block';
-      }
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainForm').style.display = 'block';
+      // Aqui você pode recriar os checkboxes se necessário
     }
   </script>
 </body>
