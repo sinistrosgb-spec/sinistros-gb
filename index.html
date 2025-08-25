@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Abertura de SinistrO</title>
+  <title>Abertura de Sinistro - Sinistros GB</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- Favicon personalizado -->
+  <!-- Favicon -->
   <link rel="icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
-  <link rel="shortcut icon" href="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" type="image/x-icon">
 
   <style>
     body {
@@ -24,7 +23,7 @@
       background: white;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
       border-top: 5px solid #003366;
     }
     .header {
@@ -69,7 +68,6 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-top: 10px;
       max-height: 300px;
       overflow-y: auto;
       border: 1px solid #ddd;
@@ -78,11 +76,10 @@
       background: #f9f9f9;
     }
     .checkbox-grid label {
-      font-weight: normal;
-      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      cursor: pointer;
     }
     button {
       background: #003366;
@@ -94,9 +91,7 @@
       font-size: 16px;
       margin-right: 10px;
     }
-    button:hover {
-      background: #002244;
-    }
+    button:hover { background: #002244; }
     .alert {
       padding: 12px;
       margin: 15px 0;
@@ -113,102 +108,128 @@
       border-top: 1px solid #ddd;
       padding-top: 10px;
     }
+    /* Tela de login */
+    .login-screen {
+      text-align: center;
+      padding: 40px;
+    }
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .login-form input {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Cabeçalho com logos -->
+  <!-- Tela de login -->
+  <div id="loginScreen" class="login-screen">
     <div class="header">
       <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-claro.png?raw=true" alt="Claro" style="height:60px;">
-      <div class="title-container">
-        <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" alt="Ícone Meraki">
-        <h1>📝 Abertura de Sinistro</h1>
-      </div>
-      <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-boticario.png?raw=true" alt="Grupo Boticário" style="height:40px;">
+      <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-boticario.png?raw=true" alt="Boticário" style="height:40px;">
     </div>
+    <h2>🔐 Acesso ao Sistema de Sinistros</h2>
+    <div class="login-form">
+      <input type="email" id="email" placeholder="Seu e-mail corporativo" style="width:100%; padding:10px; margin-bottom:10px;">
+      <input type="password" id="password" placeholder="Sua senha" style="width:100%; padding:10px; margin-bottom:10px;">
+      <button onclick="login()">Entrar</button>
+    </div>
+    <p style="font-size:12px; color:#888; margin-top:20px;">Apenas usuários autorizados</p>
+  </div>
 
-    <div id="status" class="alert"></div>
-
-    <form id="sinistroForm">
-      <div class="form-group">
-        <label>CH-Sinistro (gerado automaticamente)</label>
-        <input type="text" id="ch_sinistro" readonly placeholder="Será gerado ao carregar">
+  <!-- Formulário (escondido até login) -->
+  <div id="mainForm" style="display:none;">
+    <div class="container">
+      <div class="header">
+        <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-claro.png?raw=true" alt="Claro" style="height:60px;">
+        <div class="title-container">
+          <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/Meraki.ico?raw=true" alt="Ícone Meraki">
+          <h1>📝 Abertura de Sinistro</h1>
+        </div>
+        <img src="https://github.com/sinistrosgb-spec/sinistros-gb/blob/main/logo-boticario.png?raw=true" alt="Grupo Boticário" style="height:40px;">
       </div>
 
-      <div class="form-group">
-        <label>Referência *</label>
-        <select id="registro" required>
-          <option value="">Selecione...</option>
-          <option value="TT Siebel">TT Siebel</option>
-          <option value="OS BOTI">OS BOTI</option>
-          <option value="INC">INC</option>
-        </select>
+      <div id="status" class="alert"></div>
+
+      <form id="sinistroForm">
+        <div class="form-group">
+          <label>Referência *</label>
+          <select id="registro" required>
+            <option value="">Selecione...</option>
+            <option value="TT Siebel">TT Siebel</option>
+            <option value="OS BOTI">OS BOTI</option>
+            <option value="INC">INC</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Número da Referência *</label>
+          <input type="text" id="numero_ocorrencia" required>
+        </div>
+
+        <div class="form-group">
+          <label>Franquia *</label>
+          <input type="text" id="franquia" required>
+        </div>
+
+        <div class="form-group">
+          <label>Responsável pela Franquia *</label>
+          <input type="text" id="responsavel_franquia" required>
+        </div>
+
+        <div class="form-group">
+          <label>Telefone do Responsável</label>
+          <input type="text" id="telefone_responsavel">
+        </div>
+
+        <div class="form-group">
+          <label>E-mail do Responsável *</label>
+          <input type="email" id="email_responsavel" required>
+        </div>
+
+        <div class="form-group">
+          <label>Data do Sinistro *</label>
+          <input type="datetime-local" id="data_sinistro" required>
+        </div>
+
+        <div class="form-group">
+          <label>Equipamentos Selecionados *</label>
+          <div class="checkbox-grid" id="equipamentos-grid"></div>
+          <input type="hidden" id="equipamentos_selecionados" required>
+        </div>
+
+        <div class="form-group">
+          <label>Modelos dos Equipamentos *</label>
+          <div class="checkbox-grid" id="modelos-grid"></div>
+          <input type="hidden" id="modelos_equipamentos" required>
+        </div>
+
+        <div class="form-group">
+          <label>Descrição do Sinistro *</label>
+          <textarea id="descricao" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Anexos (fotos, vídeos, PDFs)</label>
+          <input type="file" id="anexos" multiple accept="image/*,video/*,application/pdf">
+        </div>
+
+        <button type="submit">📤 Registrar Sinistro</button>
+        <button type="button" onclick="logout()">Sair</button>
+      </form>
+
+      <div class="footer-credit">
+        Desenvolvido por Fábio Matos | Sistema Sinistros GB
       </div>
-
-      <div class="form-group">
-        <label>Número da Referência *</label>
-        <input type="text" id="numero_ocorrencia" required>
-      </div>
-
-      <div class="form-group">
-        <label>Franquia *</label>
-        <input type="text" id="franquia" required>
-      </div>
-
-      <div class="form-group">
-        <label>Responsável pela Franquia *</label>
-        <input type="text" id="responsavel_franquia" required>
-      </div>
-
-      <div class="form-group">
-        <label>Telefone do Responsável</label>
-        <input type="text" id="telefone_responsavel">
-      </div>
-
-      <div class="form-group">
-        <label>E-mail do Responsável *</label>
-        <input type="email" id="email_responsavel" required placeholder="E-mail de contato da franquia">
-      </div>
-
-      <div class="form-group">
-        <label>Data do Sinistro *</label>
-        <input type="datetime-local" id="data_sinistro" required>
-      </div>
-
-      <div class="form-group">
-        <label>Equipamentos Selecionados *</label>
-        <div class="checkbox-grid" id="equipamentos-grid"></div>
-        <input type="hidden" id="equipamentos_selecionados" required>
-      </div>
-
-      <div class="form-group">
-        <label>Modelos dos Equipamentos *</label>
-        <div class="checkbox-grid" id="modelos-grid"></div>
-        <input type="hidden" id="modelos_equipamentos" required>
-      </div>
-
-      <div class="form-group">
-        <label>Descrição do Sinistro *</label>
-        <textarea id="descricao" rows="4" required></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Anexos (fotos, vídeos, PDFs)</label>
-        <input type="file" id="anexos" multiple accept="image/*,video/*,application/pdf">
-      </div>
-
-      <button type="submit">📤 Registrar Sinistro</button>
-      <button type="button" onclick="limparForm()">🔄 Limpar</button>
-    </form>
-
-    <!-- Crédito do desenvolvedor -->
-    <div class="footer-credit">
-      Desenvolvido por Fábio Matos | Sistema Sinistros GB
     </div>
   </div>
 
   <script>
-    // 🔥 Substitua com suas credenciais do Supabase
+    // 🔥 Supabase
     const supabaseUrl = 'https://zszgjhxyebhguyxguvek.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzemdqaHh5ZWJoZ3V5eGd1dmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2Mjg4NDYsImV4cCI6MjA3MTIwNDg0Nn0.ac8jt3XRlhpNnwt4eJKwMN85K9IrG2i8y3EzRaEf1c8';
     const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
@@ -218,7 +239,6 @@
       "SINISTRO TOTAL", "RACK", "NO-BREAK", "ESTABILIZADOR", "MX", "MR", "MS", "MV",
       "CABO DE ALIMENTAÇÃO", "FONTE POE", "MODEM 4G", "MODEM CISCO"
     ];
-
     const modelos = [
       "SMS STATION 2 1200", "APC 1200", "SMS PROGRESSIVE II", "MX64", "MX65", "MX68",
       "MR33", "MR36", "MS - 8 PORTAS S/ POE", "MS - 8 PORTAS C/ POE", "MS 24 PORTAS S/ POE",
@@ -226,13 +246,51 @@
       "ZTE - MF253", "ZTE - MF293", "ELSYS - EPRL12", "ELSYS - EPRL18", "CISCO 1905", "NÃO INFORMADO"
     ];
 
-    // Função para gerar checkboxes
+    // Verificar sessão ao carregar
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        showForm();
+      } else {
+        showLogin();
+      }
+    });
+
+    // Funções de login
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert('Erro de login: ' + error.message);
+      } else {
+        showForm();
+      }
+    }
+
+    function logout() {
+      supabase.auth.signOut();
+      showLogin();
+    }
+
+    function showLogin() {
+      document.getElementById('loginScreen').style.display = 'block';
+      document.getElementById('mainForm').style.display = 'none';
+    }
+
+    function showForm() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainForm').style.display = 'block';
+
+      // Gerar checkboxes
+      gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
+      gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
+    }
+
     function gerarCheckboxes(lista, containerId, hiddenId) {
       const container = document.getElementById(containerId);
-      if (!container) {
-        console.error(`Container ${containerId} não encontrado`);
-        return;
-      }
       container.innerHTML = '';
       lista.forEach(item => {
         const label = document.createElement('label');
@@ -253,46 +311,22 @@
       });
     }
 
-    // Quando a página carregar
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Gerar CH-Sinistro
-      const { data, error } = await supabase
+    // Envio do formulário
+    document.getElementById('sinistroForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Gerar CH no momento do envio
+      const { data, error: countError } = await supabase
         .from('sinistros')
         .select('ch_sinistro', { count: 'exact' })
         .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
       
       const sequencia = (data?.length || 0) + 1;
       const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
-      document.getElementById('ch_sinistro').value = ch;
-
-      // Gerar checkboxes
-      gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
-      gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
-    });
-
-    // Limpar formulário
-    async function limparForm() {
-      document.getElementById('sinistroForm').reset();
-      const { data } = await supabase
-        .from('sinistros')
-        .select('ch_sinistro', { count: 'exact' })
-        .like('ch_sinistro', `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}`);
-      const sequencia = (data?.length || 0) + 1;
-      const ch = `CH${new Date().toISOString().slice(0,10).replace(/-/g,'')}${String(sequencia).padStart(3, '0')}`;
-      document.getElementById('ch_sinistro').value = ch;
-
-      // Recriar checkboxes
-      gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
-      gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
-    }
-
-    // Enviar formulário
-    document.getElementById('sinistroForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
 
       // Coletar dados
       const formData = {
-        ch_sinistro: document.getElementById('ch_sinistro').value,
+        ch_sinistro: ch,
         registro: document.getElementById('registro').value,
         numero_ocorrencia: document.getElementById('numero_ocorrencia').value,
         franquia: document.getElementById('franquia').value,
@@ -310,7 +344,7 @@
       const files = document.getElementById('anexos').files;
       if (files.length > 0) {
         const file = files[0];
-        const filePath = `public/${formData.ch_sinistro}/${file.name}`;
+        const filePath = `public/${ch}/${file.name}`;
         const { error: uploadError } = await supabase
           .storage
           .from('anexos-sinistros')
@@ -319,10 +353,7 @@
         if (uploadError) {
           mostrarStatus('Erro ao enviar anexo: ' + uploadError.message, 'error');
         } else {
-          const { data } = supabase
-            .storage
-            .from('anexos-sinistros')
-            .getPublicUrl(filePath);
+          const { data } = supabase.storage.from('anexos-sinistros').getPublicUrl(filePath);
           formData.anexos = data.publicUrl;
         }
       }
@@ -332,14 +363,13 @@
       if (error) {
         mostrarStatus('Erro: ' + error.message, 'error');
       } else {
-        // Tela de sucesso
+        // Mostrar CH gerado
         document.getElementById('sinistroForm').style.display = 'none';
         mostrarStatus(`
-          <h2>✅ Sinistro ${formData.ch_sinistro} registrado com sucesso!</h2>
-          <p>Olá, seu sinistro foi registrado com sucesso. Vamos analisar o quanto antes.</p>
-          <p><strong>Número do CH:</strong> ${formData.ch_sinistro}</p>
-          <p>Um e-mail de confirmação foi enviado para <strong>${formData.email_responsavel}</strong>.</p>
-          <button onclick="window.location.reload()" style="background:#003366; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">➕ Registrar novo sinistro</button>
+          <h2>✅ Sinistro ${ch} registrado com sucesso!</h2>
+          <p>O número do seu sinistro é: <strong>${ch}</strong></p>
+          <p>Vamos analisar o quanto antes.</p>
+          <button onclick="window.location.reload()">➕ Novo Sinistro</button>
         `, 'success');
       }
     });
