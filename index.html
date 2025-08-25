@@ -136,7 +136,8 @@
     <div class="login-form">
       <input type="email" id="email" placeholder="Seu e-mail corporativo" style="width:100%; padding:10px; margin-bottom:10px;">
       <input type="password" id="password" placeholder="Sua senha" style="width:100%; padding:10px; margin-bottom:10px;">
-      <button onclick="login()">Entrar</button>
+      <button onclick="login()">Entrar</button> <br>
+      <a href="#" onclick="esqueciSenha(); return false;" style="font-size:12px; color:#003366;">Esqueci a senha</a>
     </div>
     <p style="font-size:12px; color:#888; margin-top:20px;">Apenas usuários autorizados</p>
   </div>
@@ -246,8 +247,45 @@
       "ZTE - MF253", "ZTE - MF293", "ELSYS - EPRL12", "ELSYS - EPRL18", "CISCO 1905", "NÃO INFORMADO"
     ];
 
-    // Verificar sessão ao carregar
+    // Detectar convite ou recuperação de senha
     document.addEventListener('DOMContentLoaded', async () => {
+      const hash = window.location.hash;
+
+      if (hash.includes('access_token')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+        const type = params.get('type');
+
+        if (accessToken && type === 'invite') {
+          const newPassword = prompt('Bem-vindo! Crie sua nova senha:');
+          if (newPassword) {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              alert('Erro ao criar senha: ' + error.message);
+            } else {
+              alert('Senha criada com sucesso! Faça login com sua senha.');
+              window.location.hash = '';
+              window.location.reload();
+            }
+          }
+        }
+
+        if (accessToken && type === 'recovery') {
+          const newPassword = prompt('Digite sua nova senha:');
+          if (newPassword) {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) {
+              alert('Erro ao redefinir senha: ' + error.message);
+            } else {
+              alert('Senha redefinida com sucesso!');
+              window.location.hash = '';
+              window.location.reload();
+            }
+          }
+        }
+      }
+
+      // Verificar sessão
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         showForm();
@@ -270,6 +308,21 @@
       }
     }
 
+    async function esqueciSenha() {
+      const email = prompt('Digite seu e-mail para redefinir a senha:');
+      if (!email) return;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://sinistrosgb-spec.github.io/sinistros-gb/'
+      });
+
+      if (error) {
+        alert('Erro: ' + error.message);
+      } else {
+        alert('Enviamos um link de redefinição para ' + email + '.\nVerifique seu e-mail.');
+      }
+    }
+
     function logout() {
       supabase.auth.signOut();
       showLogin();
@@ -283,8 +336,6 @@
     function showForm() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainForm').style.display = 'block';
-
-      // Gerar checkboxes
       gerarCheckboxes(equipamentos, 'equipamentos-grid', 'equipamentos_selecionados');
       gerarCheckboxes(modelos, 'modelos-grid', 'modelos_equipamentos');
     }
@@ -315,7 +366,7 @@
     document.getElementById('sinistroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // ✅ GERAÇÃO DO CH-SINISTRO SÓ NO FINAL
+      // Gerar CH no final
       const { data, error: countError } = await supabase
         .from('sinistros')
         .select('ch_sinistro', { count: 'exact' })
@@ -363,7 +414,6 @@
       if (error) {
         mostrarStatus('Erro: ' + error.message, 'error');
       } else {
-        // Mostrar CH gerado
         document.getElementById('sinistroForm').style.display = 'none';
         mostrarStatus(`
           <h2>✅ Sinistro ${ch} registrado com sucesso!</h2>
